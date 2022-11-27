@@ -1,32 +1,36 @@
+import { useContext, useState } from "react";
 import { useDrop } from "react-dnd";
-import { AddElementFunctionType, dropFunc, HierarchyType } from "../Playground";
-import { ItemType } from "../Sidebar";
-
-export default function Box({
-	children,
-	addElement,
-	index,
-	hierarchy,
-}: {
-	children?: React.ReactNode;
-	addElement: AddElementFunctionType;
-	index: number;
-	hierarchy?: HierarchyType;
-}) {
-	const [{ isOver, isOverCurrent }, drop] = useDrop(
+import { ElementsContext } from "../../contexts/ElementsProvider";
+import { ItemType } from "../../types/elements";
+import { dropFunc, ElementComponentType } from "../Playground";
+import styles from "styles/elements/Box.module.scss";
+export default function Box({ children, hierarchy }: ElementComponentType) {
+	const { addElement } = useContext(ElementsContext);
+	const [{ isOverCurrent }, drop] = useDrop(
 		dropFunc(({ item }: { item: ItemType }) =>
 			addElement({ item: item, hierarchy })
 		)
 	);
+	const [over, setover] = useState(false);
+	const toggleHover = (e) => {
+		e.stopPropagation();
+		setover(!over);
+	};
+	const handleClick = (e) => {
+		e.stopPropagation();
+		console.log("click");
+	};
 	return (
 		<div
-			className={`${children ? "parentBox" : "box"}`}
-			style={{
-				backgroundColor: isOverCurrent ? "red" : "transparent",
-			}}
+			className={` ${styles.container} ${
+				children ? styles.parentBox : styles.box
+			} ${isOverCurrent ? styles.over : ""} ${over ? styles.hover : ""}`}
 			ref={drop}
+			onMouseOver={toggleHover}
+			onMouseOut={toggleHover}
+			onClick={handleClick}
 		>
-			{children}
+			<div>{children}</div>
 		</div>
 	);
 }

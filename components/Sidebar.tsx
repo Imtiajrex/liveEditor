@@ -1,13 +1,9 @@
 import { IconBox, TablerIcon } from "@tabler/icons";
 import React, { useContext, useEffect, useMemo } from "react";
 import { useDrag } from "react-dnd";
+import { ItemType } from "../types/elements";
 import Box from "./elements/Box";
-export type ItemType = {
-	title: string;
-	Icon: TablerIcon;
-	id: number;
-	Component: React.ElementType;
-};
+
 const Item = (itemProps: ItemType) => {
 	const { title, Icon, id } = itemProps;
 	const [{ isDragging, didDrop }, drag] = useDrag(() => ({
