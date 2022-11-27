@@ -5,7 +5,7 @@ import { ItemType } from "../../types/elements";
 import { dropFunc, ElementComponentType } from "../Playground";
 import styles from "styles/elements/Box.module.scss";
 export default function Box({ children, hierarchy }: ElementComponentType) {
-	const { addElement } = useContext(ElementsContext);
+	const { addElement, selectElement } = useContext(ElementsContext);
 	const [{ isOverCurrent }, drop] = useDrop(
 		dropFunc(({ item }: { item: ItemType }) =>
 			addElement({ item: item, hierarchy })
@@ -18,7 +18,7 @@ export default function Box({ children, hierarchy }: ElementComponentType) {
 	};
 	const handleClick = (e) => {
 		e.stopPropagation();
-		console.log("click");
+		selectElement(hierarchy);
 	};
 	return (
 		<div

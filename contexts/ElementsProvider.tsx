@@ -13,6 +13,8 @@ type ElementsContextType = {
 	elements: ElementType[];
 	addElement: AddElementFunctionType;
 	reset: () => void;
+	selectElement: (hierarchy: number[]) => void;
+	selectedElement: number[];
 };
 export const ElementsContext = createContext({} as ElementsContextType);
 
@@ -22,25 +24,19 @@ export default function ElementsProvider({
 	children: React.ReactNode;
 }) {
 	const [elements, setElements] = useState<ElementType[]>([]);
+	const [selectedElement, setSelectedElement] = useState<number[]>([]);
 	const addElement = ({ item, hierarchy }: AddElementArgs) => {
 		setElements((prev) => {
 			const newElement = {
 				title: item.title,
 				Icon: item.Icon,
-				id: item.id,
 				Component: item.Component,
 			} as ElementType;
 			const newElements = _.cloneDeep(prev) as ElementType[];
 			if (hierarchy !== undefined) {
 				traverse(newElements, [...hierarchy], newElement);
 			} else {
-				newElements.push({
-					title: item.title,
-					Icon: item.Icon,
-					id: item.id,
-					Component: item.Component,
-					hierarchy: [prev.length],
-				});
+				newElements.push({ ...newElement, hierarchy: [prev.length] });
 			}
 			return [...newElements];
 		});
@@ -48,8 +44,13 @@ export default function ElementsProvider({
 	const reset = () => {
 		setElements([]);
 	};
+	const selectElement = (hierarchy: number[]) => {
+		setSelectedElement(hierarchy);
+	};
 	return (
-		<ElementsContext.Provider value={{ elements, addElement, reset }}>
+		<ElementsContext.Provider
+			value={{ elements, addElement, reset, selectElement, selectedElement }}
+		>
 			{children}
 		</ElementsContext.Provider>
 	);

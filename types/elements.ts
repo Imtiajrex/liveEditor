@@ -8,6 +8,5 @@ export type AddElementFunctionType = (element: AddElementArgs) => void;
 export type ItemType = {
 	title: string;
 	Icon: TablerIcon;
-	id: number;
 	Component: React.ElementType;
 };

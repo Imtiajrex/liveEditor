@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { useDrop } from "react-dnd";
 import { ElementsContext, ElementType } from "../contexts/ElementsProvider";
 import styles from "styles/Playground.module.scss";
+import { createStyles } from "@mantine/core";
 export const dropFunc = (addElement) => ({
 	accept: "Element",
 	drop: (item: any, monitor) => {
@@ -17,10 +18,19 @@ export const dropFunc = (addElement) => ({
 	}),
 });
 
+const useStyles = createStyles((theme) => ({
+	playground: { width: "100%", minHeight: "100vh", marginLeft: 346 },
+	collapsed: {
+		marginLeft: "270px!important",
+	},
+}));
+
 export default function Playground() {
-	const { addElement, elements, reset } = useContext(ElementsContext);
+	const { addElement, elements, reset, selectedElement } =
+		useContext(ElementsContext);
 	const [{ isOver, isOverCurrent }, drop] = useDrop(dropFunc(addElement));
 
+	const { classes } = useStyles();
 	const renderElements = (elements: ElementType[]) =>
 		elements.map((element: ElementType, index) => {
 			return (
@@ -31,7 +41,12 @@ export default function Playground() {
 		});
 
 	return (
-		<div className={"playground"} ref={drop}>
+		<div
+			className={`${classes.playground} ${
+				selectedElement.length == 0 && classes.collapsed
+			}`}
+			ref={drop}
+		>
 			<div
 				style={{ position: "fixed", top: 25, right: 25, cursor: "pointer" }}
 				onClick={() => reset()}
