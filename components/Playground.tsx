@@ -19,15 +19,20 @@ export const dropFunc = (addElement) => ({
 });
 
 const useStyles = createStyles((theme) => ({
-	playground: { width: "100%", minHeight: "100vh", marginLeft: 360 },
+	playground: { width: "100%", minHeight: "100vh", marginLeft: 362 },
 	collapsed: {
 		marginLeft: "270px!important",
 	},
 }));
 
 export default function Playground() {
-	const { addElement, elements, reset, selectedElementHierarchy } =
-		useContext(ElementsContext);
+	const {
+		addElement,
+		elements,
+		reset,
+		selectedElementHierarchy,
+		resetSelectedElement,
+	} = useContext(ElementsContext);
 	const [{ isOver, isOverCurrent }, drop] = useDrop(dropFunc(addElement));
 
 	const { classes } = useStyles();
@@ -38,12 +43,16 @@ export default function Playground() {
 			</Element>
 		));
 
+	const handleClick = () => {
+		resetSelectedElement();
+	};
 	return (
 		<div
 			className={`${classes.playground} ${
 				selectedElementHierarchy.length == 0 && classes.collapsed
 			}`}
 			ref={drop}
+			onClick={handleClick}
 		>
 			<div
 				style={{ position: "fixed", top: 25, right: 25, cursor: "pointer" }}

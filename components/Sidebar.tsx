@@ -3,16 +3,14 @@ import {
 	IconBox,
 	IconBrandCss3,
 	IconListDetails,
-	TablerIcon,
 } from "@tabler/icons";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { useDrag } from "react-dnd";
 import { ItemType } from "../types/elements";
 import Box from "./elements/Box";
 import styles from "styles/Sidebar.module.scss";
 import { ElementsContext } from "../contexts/ElementsProvider";
 import { createStyles, Tabs, Text, UnstyledButton } from "@mantine/core";
-import { IconPhoto, IconMessageCircle, IconSettings } from "@tabler/icons";
 import StructureTab from "./sidebar/StructureTab";
 import StyleTab from "./sidebar/StyleTab";
 import AdvancedTab from "./sidebar/AdvancedTab";
@@ -37,13 +35,12 @@ const useStyles = createStyles((theme) => ({
 		},
 	},
 	sideBar: {
-		maxWidth: 360,
+		maxWidth: 362,
 		width: "100%",
-		backgroundColor: "#e6e6e6",
+		backgroundColor: theme.colors.gray[0],
 		height: "100%",
 		position: "fixed",
-		borderTopRightRadius: "25px",
-		borderBottomRightRadius: "25px",
+		borderRight: `2px solid ${theme.colors.gray[2]}`,
 		transition: "0.2s",
 		overflow: "hidden",
 	},

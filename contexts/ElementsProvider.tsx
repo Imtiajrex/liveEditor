@@ -19,6 +19,7 @@ type ElementsContextType = {
 	selectedElementHierarchy: number[];
 	getSelectedElement: () => ElementType | null;
 	updateSelectedElement: (item: ElementType) => void;
+	resetSelectedElement: () => void;
 };
 export const ElementsContext = createContext({} as ElementsContextType);
 
@@ -102,6 +103,9 @@ export default function ElementsProvider({
 			setElements(newElements);
 		}
 	};
+	const resetSelectedElement = () => {
+		setSelectedElementHierarchy([]);
+	};
 	return (
 		<ElementsContext.Provider
 			value={{
@@ -112,6 +116,7 @@ export default function ElementsProvider({
 				selectedElementHierarchy,
 				getSelectedElement,
 				updateSelectedElement,
+				resetSelectedElement,
 			}}
 		>
 			{children}
