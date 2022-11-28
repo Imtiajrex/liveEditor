@@ -13,6 +13,9 @@ import styles from "styles/Sidebar.module.scss";
 import { ElementsContext } from "../contexts/ElementsProvider";
 import { createStyles, Tabs, Text, UnstyledButton } from "@mantine/core";
 import { IconPhoto, IconMessageCircle, IconSettings } from "@tabler/icons";
+import StructureTab from "./sidebar/StructureTab";
+import StyleTab from "./sidebar/StyleTab";
+import AdvancedTab from "./sidebar/AdvancedTab";
 
 const useStyles = createStyles((theme) => ({
 	item: {
@@ -34,7 +37,7 @@ const useStyles = createStyles((theme) => ({
 		},
 	},
 	sideBar: {
-		maxWidth: 346,
+		maxWidth: 360,
 		width: "100%",
 		backgroundColor: "#e6e6e6",
 		height: "100%",
@@ -79,12 +82,12 @@ const Item = (itemProps: ItemType) => {
 const items = [{ title: "Box", Icon: IconBox, Component: Box }] as ItemType[];
 
 export default function Sidebar() {
-	const { selectedElement } = useContext(ElementsContext);
+	const { selectedElementHierarchy } = useContext(ElementsContext);
 	const { classes } = useStyles();
 	return (
 		<div
 			className={`${classes.sideBar} ${
-				selectedElement.length == 0 && classes.collapsed
+				selectedElementHierarchy.length == 0 && classes.collapsed
 			}`}
 		>
 			<ElementsTabs />
@@ -102,7 +105,14 @@ const Elements = () => {
 	return <div className={styles.items}>{renderItems}</div>;
 };
 const ElementsTabs = () => {
-	const { selectedElement } = useContext(ElementsContext);
+	const { selectedElementHierarchy } = useContext(ElementsContext);
+
+	const [activeTab, setActiveTab] = React.useState<string | null>("elements");
+	React.useEffect(() => {
+		if (selectedElementHierarchy.length == 0) {
+			setActiveTab("elements");
+		}
+	}, [selectedElementHierarchy]);
 	return (
 		<Tabs
 			styles={(theme) => ({
@@ -111,35 +121,46 @@ const ElementsTabs = () => {
 				},
 			})}
 			defaultValue={"elements"}
+			value={activeTab}
+			onTabChange={setActiveTab}
 		>
 			<Tabs.List>
 				<Tabs.Tab value="elements" icon={<IconBox size={16} />}>
-					{selectedElement.length == 0 ? "Elements" : ""}
+					{selectedElementHierarchy.length == 0 ? "Elements" : ""}
 				</Tabs.Tab>
 				<Tabs.Tab
-					value="details"
+					value="structure"
 					icon={<IconListDetails size={16} />}
-					disabled={selectedElement.length == 0}
+					disabled={selectedElementHierarchy.length == 0}
 				>
-					{selectedElement.length == 0 ? "" : "Details"}
+					{selectedElementHierarchy.length == 0 ? "" : "Structure"}
 				</Tabs.Tab>
 				<Tabs.Tab
-					value="styling"
+					value="style"
 					icon={<IconBrandCss3 size={16} />}
-					disabled={selectedElement.length == 0}
+					disabled={selectedElementHierarchy.length == 0}
 				>
-					{selectedElement.length == 0 ? "" : "Style"}
+					{selectedElementHierarchy.length == 0 ? "" : "Style"}
 				</Tabs.Tab>
 				<Tabs.Tab
 					value="advanced"
 					icon={<IconAtom2 size={16} />}
-					disabled={selectedElement.length == 0}
+					disabled={selectedElementHierarchy.length == 0}
 				>
-					{selectedElement.length == 0 ? "" : "Advanced"}
+					{selectedElementHierarchy.length == 0 ? "" : "Advanced"}
 				</Tabs.Tab>
 			</Tabs.List>
 			<Tabs.Panel value="elements">
 				<Elements />
+			</Tabs.Panel>
+			<Tabs.Panel value="structure">
+				<StructureTab />
+			</Tabs.Panel>
+			<Tabs.Panel value="style">
+				<StyleTab />
+			</Tabs.Panel>
+			<Tabs.Panel value="advanced">
+				<AdvancedTab />
 			</Tabs.Panel>
 		</Tabs>
 	);

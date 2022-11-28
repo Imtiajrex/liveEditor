@@ -19,31 +19,29 @@ export const dropFunc = (addElement) => ({
 });
 
 const useStyles = createStyles((theme) => ({
-	playground: { width: "100%", minHeight: "100vh", marginLeft: 346 },
+	playground: { width: "100%", minHeight: "100vh", marginLeft: 360 },
 	collapsed: {
 		marginLeft: "270px!important",
 	},
 }));
 
 export default function Playground() {
-	const { addElement, elements, reset, selectedElement } =
+	const { addElement, elements, reset, selectedElementHierarchy } =
 		useContext(ElementsContext);
 	const [{ isOver, isOverCurrent }, drop] = useDrop(dropFunc(addElement));
 
 	const { classes } = useStyles();
 	const renderElements = (elements: ElementType[]) =>
-		elements.map((element: ElementType, index) => {
-			return (
-				<Element {...element} key={index}>
-					{element.children && renderElements(element.children)}
-				</Element>
-			);
-		});
+		elements.map((element: ElementType, index) => (
+			<Element {...element} key={index}>
+				{element.children && renderElements(element.children)}
+			</Element>
+		));
 
 	return (
 		<div
 			className={`${classes.playground} ${
-				selectedElement.length == 0 && classes.collapsed
+				selectedElementHierarchy.length == 0 && classes.collapsed
 			}`}
 			ref={drop}
 		>
@@ -60,6 +58,7 @@ export default function Playground() {
 export type ElementComponentType = Omit<ElementType, "children"> & {
 	children?: React.ReactNode;
 };
-const Element = ({ children, Component, hierarchy }: ElementComponentType) => {
-	return <Component hierarchy={hierarchy}>{children}</Component>;
+const Element = (elementProps: ElementComponentType) => {
+	const { Component, children } = elementProps;
+	return <Component {...elementProps}>{children}</Component>;
 };

@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import {
 	AddElementArgs,
 	AddElementFunctionType,
@@ -8,13 +8,17 @@ import _ from "lodash";
 export type ElementType = ItemType & {
 	children?: ElementType[];
 	hierarchy: number[];
+	id: string;
+	style?: React.CSSProperties;
 };
 type ElementsContextType = {
 	elements: ElementType[];
 	addElement: AddElementFunctionType;
 	reset: () => void;
 	selectElement: (hierarchy: number[]) => void;
-	selectedElement: number[];
+	selectedElementHierarchy: number[];
+	getSelectedElement: () => ElementType | null;
+	updateSelectedElement: (item: ElementType) => void;
 };
 export const ElementsContext = createContext({} as ElementsContextType);
 
@@ -24,17 +28,24 @@ export default function ElementsProvider({
 	children: React.ReactNode;
 }) {
 	const [elements, setElements] = useState<ElementType[]>([]);
-	const [selectedElement, setSelectedElement] = useState<number[]>([]);
+	const [selectedElementHierarchy, setSelectedElementHierarchy] = useState<
+		number[]
+	>([]);
 	const addElement = ({ item, hierarchy }: AddElementArgs) => {
 		setElements((prev) => {
 			const newElement = {
 				title: item.title,
 				Icon: item.Icon,
 				Component: item.Component,
+				id: Date.now().toString(),
 			} as ElementType;
 			const newElements = _.cloneDeep(prev) as ElementType[];
 			if (hierarchy !== undefined) {
-				traverse(newElements, [...hierarchy], newElement);
+				traverse({
+					elements: newElements,
+					hierarchy,
+					item: newElement,
+				});
 			} else {
 				newElements.push({ ...newElement, hierarchy: [prev.length] });
 			}
@@ -45,28 +56,97 @@ export default function ElementsProvider({
 		setElements([]);
 	};
 	const selectElement = (hierarchy: number[]) => {
-		setSelectedElement(hierarchy);
+		setSelectedElementHierarchy(hierarchy);
+	};
+	const checkIfSelectedExists = () => {
+		if (selectedElementHierarchy.length > 0) {
+			const selected = elements.find((element) => {
+				return element.hierarchy.every(
+					(value, index) => value === selectedElementHierarchy[index]
+				);
+			});
+			if (selected == undefined) {
+				setSelectedElementHierarchy([]);
+			}
+		}
+	};
+	useEffect(() => {
+		checkIfSelectedExists();
+	}, [elements]);
+
+	const getSelectedElement = () => {
+		if (selectedElementHierarchy.length == 0) return null;
+		let selected = { item: {} } as { item: ElementType };
+		traverse({
+			elements: _.cloneDeep(elements),
+			hierarchy: [...selectedElementHierarchy],
+			item: {} as ElementType,
+			returnValue: true,
+			returnElement: selected,
+		});
+
+		return _.cloneDeep(selected.item) as ElementType;
+	};
+	const updateSelectedElement = (item: ElementType) => {
+		//update selected element from elements array using selectedElement stack
+		const hierarchy = _.cloneDeep(item.hierarchy);
+		if (hierarchy && hierarchy.length > 0) {
+			const newElements = _.cloneDeep(elements);
+			traverse({
+				elements: newElements,
+				hierarchy,
+				item,
+				assign: true,
+			});
+			console.log(item, newElements);
+			setElements(newElements);
+		}
 	};
 	return (
 		<ElementsContext.Provider
-			value={{ elements, addElement, reset, selectElement, selectedElement }}
+			value={{
+				elements,
+				addElement,
+				reset,
+				selectElement,
+				selectedElementHierarchy,
+				getSelectedElement,
+				updateSelectedElement,
+			}}
 		>
 			{children}
 		</ElementsContext.Provider>
 	);
 }
 
-const traverse = (
-	elements: ElementType[],
-	hierarchy: number[],
-	item: ElementType
-) => {
+const traverse = ({
+	elements,
+	hierarchy,
+	item,
+	assign = false,
+	returnValue = false,
+	returnElement,
+}: {
+	elements: ElementType[];
+	hierarchy: number[];
+	item: ElementType;
+	assign?: boolean;
+	returnValue?: boolean;
+	returnElement?: { item: ElementType };
+}) => {
 	const topParent = hierarchy.pop();
 	elements.forEach((element, index) => {
 		if (index == topParent) {
 			if (hierarchy.length == 0) {
+				if (returnValue && returnElement) {
+					returnElement.item = element;
+					return;
+				}
+				if (assign) {
+					elements[index] = item;
+					return;
+				}
 				const children = _.cloneDeep(element.children || []);
-
 				children.push({
 					...item,
 					hierarchy: [children.length, ...element.hierarchy],
@@ -74,7 +154,14 @@ const traverse = (
 				element.children = children;
 			} else {
 				if (element.children != undefined)
-					traverse(element.children, hierarchy, item);
+					traverse({
+						elements: element.children,
+						hierarchy,
+						item,
+						assign,
+						returnElement,
+						returnValue,
+					});
 			}
 		}
 	});
