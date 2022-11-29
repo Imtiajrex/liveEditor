@@ -61,12 +61,8 @@ export default function ElementsProvider({
 	};
 	const checkIfSelectedExists = () => {
 		if (selectedElementHierarchy.length > 0) {
-			const selected = elements.find((element) => {
-				return element.hierarchy.every(
-					(value, index) => value === selectedElementHierarchy[index]
-				);
-			});
-			if (selected == undefined) {
+			const selected = getSelectedElement();
+			if (!selected) {
 				setSelectedElementHierarchy([]);
 			}
 		}
