@@ -5,11 +5,12 @@ import styles from "styles/Playground.module.scss";
 import { createStyles } from "@mantine/core";
 export const dropFunc = (addElement) => ({
 	accept: "Element",
-	drop: (item: any, monitor) => {
+	drop: (item: ElementType, monitor) => {
 		const didDrop = monitor.didDrop();
 		if (didDrop) {
 			return;
 		}
+		console.log(item);
 		addElement({ item });
 	},
 	collect: (monitor) => ({

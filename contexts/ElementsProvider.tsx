@@ -34,12 +34,7 @@ export default function ElementsProvider({
 	>([]);
 	const addElement = ({ item, hierarchy }: AddElementArgs) => {
 		setElements((prev) => {
-			const newElement = {
-				title: item.title,
-				Icon: item.Icon,
-				Component: item.Component,
-				id: Date.now().toString(),
-			} as ElementType;
+			const newElement = { ...item, id: Date.now().toString() } as ElementType;
 			const newElements = _.cloneDeep(prev) as ElementType[];
 			if (hierarchy !== undefined) {
 				traverse({

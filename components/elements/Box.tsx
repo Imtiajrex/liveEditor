@@ -37,9 +37,9 @@ export default function Box({
 			),
 		[hierarchy, selectedElementHierarchy]
 	);
-	const elementsStyleObject = `${styles.container} ${
-		children ? styles.parentBox : styles.box
-	} ${isOverCurrent ? styles.over : ""} ${over || active ? styles.hover : ""}`;
+	const elementsStyleObject = `${styles.container} ${styles.box} ${
+		isOverCurrent ? styles.over : ""
+	} ${over || active ? styles.hover : ""}`;
 	return (
 		<div
 			className={`${elementsStyleObject}`}

@@ -9,7 +9,7 @@ import { useDrag } from "react-dnd";
 import { ItemType } from "../types/elements";
 import Box from "./elements/Box";
 import styles from "styles/Sidebar.module.scss";
-import { ElementsContext } from "../contexts/ElementsProvider";
+import { ElementsContext, ElementType } from "../contexts/ElementsProvider";
 import { createStyles, Tabs, Text, UnstyledButton } from "@mantine/core";
 import StructureTab from "./sidebar/StructureTab";
 import StyleTab from "./sidebar/StyleTab";
@@ -49,7 +49,7 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-const Item = (itemProps: ItemType) => {
+const Item = (itemProps: ElementType) => {
 	const { title, Icon } = itemProps;
 	const [{ isDragging, didDrop }, drag] = useDrag(() => ({
 		type: "Element",
@@ -76,7 +76,16 @@ const Item = (itemProps: ItemType) => {
 		</UnstyledButton>
 	);
 };
-const items = [{ title: "Box", Icon: IconBox, Component: Box }] as ItemType[];
+const items = [
+	{
+		title: "Box",
+		Icon: IconBox,
+		Component: Box,
+		style: {
+			padding: "20px",
+		},
+	},
+] as ElementType[];
 
 export default function Sidebar() {
 	const { selectedElementHierarchy } = useContext(ElementsContext);
