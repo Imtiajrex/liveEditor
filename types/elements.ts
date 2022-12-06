@@ -1,7 +1,8 @@
 import { TablerIcon } from "@tabler/icons";
+import { ElementType } from "../contexts/ElementsProvider";
 
 export type AddElementArgs = {
-	item: ItemType;
+	item: ElementType;
 	hierarchy?: number[];
 };
 export type AddElementFunctionType = (element: AddElementArgs) => void;

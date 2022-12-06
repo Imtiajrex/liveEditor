@@ -83,6 +83,12 @@ const items = [
 		Component: Box,
 		style: {
 			padding: "20px",
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "flex-start",
+			alignItems: "flex-start",
+			height: "auto",
+			width: "100%",
 		},
 	},
 ] as ElementType[];

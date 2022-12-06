@@ -1,7 +1,6 @@
 import { useContext, useMemo, useState } from "react";
 import { useDrop } from "react-dnd";
-import { ElementsContext } from "../../contexts/ElementsProvider";
-import { ItemType } from "../../types/elements";
+import { ElementsContext, ElementType } from "../../contexts/ElementsProvider";
 import { dropFunc, ElementComponentType } from "../Playground";
 import styles from "styles/elements/Box.module.scss";
 export default function Box({
@@ -12,7 +11,7 @@ export default function Box({
 	const { addElement, selectElement, selectedElementHierarchy } =
 		useContext(ElementsContext);
 	const [{ isOverCurrent }, drop] = useDrop(
-		dropFunc(({ item }: { item: ItemType }) =>
+		dropFunc(({ item }: { item: ElementType }) =>
 			addElement({ item: item, hierarchy })
 		)
 	);
@@ -37,7 +36,7 @@ export default function Box({
 			),
 		[hierarchy, selectedElementHierarchy]
 	);
-	const elementsStyleObject = `${styles.container} ${styles.box} ${
+	const elementsStyleObject = `${!children && styles.box} ${
 		isOverCurrent ? styles.over : ""
 	} ${over || active ? styles.hover : ""}`;
 	return (
