@@ -170,6 +170,28 @@ const inputs = [
 		key: "backgroundColor",
 		input: ColorInput,
 		defaultValue: "#fff",
+		props: {
+			format: "rgba",
+		},
+	},
+	{
+		label: "Text Color",
+		key: "color",
+		input: ColorInput,
+		defaultValue: "#000",
+		props: {
+			format: "rgba",
+		},
+	},
+	{
+		label: "Font Size",
+		key: "fontSize",
+		input: NumberInput,
+	},
+	{
+		label: "Font weight",
+		key: "fontWeight",
+		input: NumberInput,
 	},
 
 	{

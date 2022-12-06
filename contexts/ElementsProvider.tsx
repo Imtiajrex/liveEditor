@@ -10,6 +10,7 @@ export type ElementType = ItemType & {
 	hierarchy: number[];
 	id: string;
 	style?: React.CSSProperties;
+	content?: string;
 };
 type ElementsContextType = {
 	elements: ElementType[];
@@ -90,7 +91,6 @@ export default function ElementsProvider({
 				item,
 				assign: true,
 			});
-			console.log(item, newElements);
 			setElements(newElements);
 		}
 	};

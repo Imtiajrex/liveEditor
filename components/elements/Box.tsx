@@ -7,6 +7,7 @@ export default function Box({
 	children,
 	hierarchy,
 	style,
+	content,
 }: ElementComponentType) {
 	const { addElement, selectElement, selectedElementHierarchy } =
 		useContext(ElementsContext);
@@ -36,9 +37,9 @@ export default function Box({
 			),
 		[hierarchy, selectedElementHierarchy]
 	);
-	const elementsStyleObject = `${!children && styles.box} ${
-		isOverCurrent ? styles.over : ""
-	} ${over || active ? styles.hover : ""}`;
+	const elementsStyleObject = `${
+		((!children && !content) || (content && content.length == 0)) && styles.box
+	} ${isOverCurrent ? styles.over : ""} ${over || active ? styles.hover : ""}`;
 	return (
 		<div
 			className={`${elementsStyleObject}`}
@@ -48,6 +49,7 @@ export default function Box({
 			onMouseOut={onOut}
 			onClick={handleClick}
 		>
+			{content}
 			{children}
 		</div>
 	);

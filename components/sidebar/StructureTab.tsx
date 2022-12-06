@@ -1,7 +1,7 @@
 import { ElementsContext } from "../../contexts/ElementsProvider";
 import React, { useContext, useState } from "react";
 import { renderInputs, StyleInputType, useStyles } from "./StyleTab";
-import { SegmentedControl, Center, TextInput } from "@mantine/core";
+import { SegmentedControl, Center, TextInput, Text } from "@mantine/core";
 import {
 	IconDirectionHorizontal,
 	IconLayoutAlignBottom,
@@ -22,6 +22,9 @@ export default function StructureTab() {
 		updateSelectedElement,
 		selectedElementHierarchy,
 	} = useContext(ElementsContext);
+	const [content, setContent] = useState({
+		content: "",
+	});
 	const [style, setStyle] = useState({} as React.CSSProperties);
 	const [multipleValueCollapse, setMultipleValueCollapse] = useState(
 		{} as {
@@ -32,7 +35,6 @@ export default function StructureTab() {
 	React.useEffect(() => {
 		if (selectedElementHierarchy.length > 0) {
 			const element = getSelectedElement();
-			console.log(element && element.style);
 			if (element && element.style) setStyle(element.style);
 		}
 	}, [selectedElementHierarchy]);
@@ -44,8 +46,20 @@ export default function StructureTab() {
 			updateSelectedElement(selectedElement);
 		}
 	};
+	const handleContent = (e) => {
+		const selectedElement = getSelectedElement();
+		if (selectedElement) {
+			const value = e.target.value;
+			selectedElement.content = value;
+			setContent((prev) => ({ ...prev, content: value }));
+			updateSelectedElement(selectedElement);
+		}
+	};
 	return (
 		<div className={classes.container}>
+			<Text weight={700} size="lg">
+				Structure
+			</Text>
 			{renderInputs({
 				inputs,
 				setMultipleValueCollapse,
@@ -54,6 +68,15 @@ export default function StructureTab() {
 				classes,
 				style,
 			})}
+			<Text weight={700} size="lg">
+				Contents
+			</Text>
+			<TextInput
+				label="Content"
+				placeholder="Enter Content here"
+				value={content.content}
+				onChange={handleContent}
+			/>
 		</div>
 	);
 }

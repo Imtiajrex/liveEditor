@@ -82,7 +82,7 @@ const items = [
 		Icon: IconBox,
 		Component: Box,
 		style: {
-			padding: "20px",
+			padding: 20,
 			display: "flex",
 			flexDirection: "column",
 			justifyContent: "flex-start",

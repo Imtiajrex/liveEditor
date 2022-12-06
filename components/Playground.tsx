@@ -10,7 +10,6 @@ export const dropFunc = (addElement) => ({
 		if (didDrop) {
 			return;
 		}
-		console.log(item);
 		addElement({ item });
 	},
 	collect: (monitor) => ({
