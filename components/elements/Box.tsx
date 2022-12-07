@@ -1,8 +1,9 @@
 import { useContext, useMemo, useState } from "react";
 import { useDrop } from "react-dnd";
-import { ElementsContext, ElementType } from "../../contexts/ElementsProvider";
+import { ElementsContext } from "../../contexts/ElementsProvider";
 import { dropFunc, ElementComponentType } from "../Playground";
 import styles from "styles/elements/Box.module.scss";
+import { ElementType } from "../../types/elements";
 export default function Box({
 	children,
 	hierarchy,

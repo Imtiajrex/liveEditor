@@ -4,36 +4,15 @@ import {
 	IconBrandCss3,
 	IconListDetails,
 } from "@tabler/icons";
-import React, { useContext, useMemo } from "react";
-import { useDrag } from "react-dnd";
-import { ItemType } from "../types/elements";
-import Box from "./elements/Box";
-import styles from "styles/Sidebar.module.scss";
-import { ElementsContext, ElementType } from "../contexts/ElementsProvider";
-import { createStyles, Tabs, Text, UnstyledButton } from "@mantine/core";
+import React, { useContext } from "react";
+import { ElementsContext } from "../contexts/ElementsProvider";
+import { createStyles, Tabs } from "@mantine/core";
 import StructureTab from "./sidebar/StructureTab";
 import StyleTab from "./sidebar/StyleTab";
 import AdvancedTab from "./sidebar/AdvancedTab";
+import Elements from "./lib/Elements";
 
 const useStyles = createStyles((theme) => ({
-	item: {
-		display: "flex",
-		flexDirection: "column",
-		alignItems: "center",
-		justifyContent: "center",
-		textAlign: "center",
-		borderRadius: theme.radius.md,
-		width: 90,
-		height: 90,
-		backgroundColor:
-			theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
-		transition: "box-shadow 150ms ease, transform 100ms ease",
-
-		"&:hover": {
-			boxShadow: `${theme.shadows.md} !important`,
-			transform: "scale(1.05)",
-		},
-	},
 	sideBar: {
 		maxWidth: 362,
 		width: "100%",
@@ -49,50 +28,6 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-const Item = (itemProps: ElementType) => {
-	const { title, Icon } = itemProps;
-	const [{ isDragging, didDrop }, drag] = useDrag(() => ({
-		type: "Element",
-		item: itemProps,
-		collect: (monitor) => {
-			return {
-				isDragging: monitor.isDragging(),
-				didDrop: monitor.didDrop(),
-			};
-		},
-	}));
-	const { classes } = useStyles();
-
-	return (
-		<UnstyledButton
-			key={title.toLowerCase()}
-			className={classes.item}
-			ref={drag}
-		>
-			<Icon size={32} />
-			<Text size="xs" mt={7}>
-				{title}
-			</Text>
-		</UnstyledButton>
-	);
-};
-const items = [
-	{
-		title: "Box",
-		Icon: IconBox,
-		Component: Box,
-		style: {
-			padding: 20,
-			display: "flex",
-			flexDirection: "column",
-			justifyContent: "flex-start",
-			alignItems: "flex-start",
-			height: "auto",
-			width: "100%",
-		},
-	},
-] as ElementType[];
-
 export default function Sidebar() {
 	const { selectedElementHierarchy } = useContext(ElementsContext);
 	const { classes } = useStyles();
@@ -106,16 +41,6 @@ export default function Sidebar() {
 		</div>
 	);
 }
-const Elements = () => {
-	const renderItems = useMemo(
-		() =>
-			items.map((item, index) => {
-				return <Item {...item} key={index} />;
-			}),
-		[]
-	);
-	return <div className={styles.items}>{renderItems}</div>;
-};
 const ElementsTabs = () => {
 	const { selectedElementHierarchy } = useContext(ElementsContext);
 

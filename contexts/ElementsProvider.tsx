@@ -2,16 +2,9 @@ import { createContext, useEffect, useState } from "react";
 import {
 	AddElementArgs,
 	AddElementFunctionType,
-	ItemType,
+	ElementType,
 } from "../types/elements";
 import _ from "lodash";
-export type ElementType = ItemType & {
-	children?: ElementType[];
-	hierarchy: number[];
-	id: string;
-	style?: React.CSSProperties;
-	content?: string;
-};
 type ElementsContextType = {
 	elements: ElementType[];
 	addElement: AddElementFunctionType;
@@ -33,7 +26,11 @@ export default function ElementsProvider({
 	const [selectedElementHierarchy, setSelectedElementHierarchy] = useState<
 		number[]
 	>([]);
-	const addElement = ({ item, hierarchy }: AddElementArgs) => {
+	const addElement = ({
+		item,
+		hierarchy,
+		position = "bottom",
+	}: AddElementArgs) => {
 		setElements((prev) => {
 			const newElement = { ...item, id: Date.now().toString() } as ElementType;
 			const newElements = _.cloneDeep(prev) as ElementType[];
@@ -44,7 +41,19 @@ export default function ElementsProvider({
 					item: newElement,
 				});
 			} else {
-				newElements.push({ ...newElement, hierarchy: [prev.length] });
+				if (position == "bottom")
+					newElements.push({ ...newElement, hierarchy: [prev.length] });
+				else {
+					let updatedElements = [
+						{ ...newElement, hierarchy: [0] },
+						...newElements,
+					];
+					updatedElements = updatedElements.map((item, index) => ({
+						...item,
+						hierarchy: [index],
+					}));
+					return updatedElements;
+				}
 			}
 			return [...newElements];
 		});
