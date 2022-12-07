@@ -24,15 +24,7 @@ export const elements = [
 		title: "Container",
 		Icon: IconBox,
 		componentKey: "container",
-		style: {
-			padding: 20,
-			display: "flex",
-			flexDirection: "column",
-			justifyContent: "flex-start",
-			alignItems: "flex-start",
-			height: "auto",
-			width: "100%",
-		},
+		style: {},
 	},
 ] as ElementType[];
 

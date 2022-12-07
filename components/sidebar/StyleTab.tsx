@@ -1,4 +1,4 @@
-import { ElementsContext } from "../../contexts/ElementsProvider";
+import { useElementsContext } from "../../contexts/ElementsProvider";
 import React, { useContext, useState } from "react";
 import {
 	ColorInput,
@@ -31,7 +31,7 @@ export default function StyleTab() {
 		getSelectedElement,
 		updateSelectedElement,
 		selectedElementHierarchy,
-	} = useContext(ElementsContext);
+	} = useElementsContext();
 	const [style, setStyle] = useState({} as React.CSSProperties);
 	const [multipleValueCollapse, setMultipleValueCollapse] = useState(
 		{} as {
@@ -42,7 +42,9 @@ export default function StyleTab() {
 	React.useEffect(() => {
 		if (selectedElementHierarchy.length > 0) {
 			const element = getSelectedElement();
-			if (element && element.style) setStyle(element.style);
+			if (element && element.style) {
+				setStyle(element.style);
+			}
 		}
 	}, [selectedElementHierarchy]);
 	const setStyleValue = ({ key, value }) => {
@@ -77,6 +79,10 @@ export const renderInputs = ({
 	value,
 }) => {
 	return inputs.map((input) => {
+		const handleChange = (val) => {
+			const value = input.textField ? val.target.value : val;
+			setValue({ key: input.key, value });
+		};
 		return (
 			<div className={classes.inputGroup} key={input.key}>
 				{input.children && (
@@ -113,13 +119,7 @@ export const renderInputs = ({
 						) : (
 							<input.input
 								placeholder={input.defaultValue}
-								onChange={(value) => {
-									if (input.props && input.props.onChange) {
-										input.props.onChange({ value, setValue });
-									} else {
-										setValue({ key: input.key, value });
-									}
-								}}
+								onChange={handleChange}
 								value={value[input.key] ?? ""}
 								{...input.props}
 							/>
@@ -130,11 +130,7 @@ export const renderInputs = ({
 					<Input.Wrapper label={input.label}>
 						<input.input
 							value={value[input.key] ?? ""}
-							onChange={(val) => {
-								const value =
-									input.props && input.props.textField ? val.target.value : val;
-								setValue({ key: input.key, value });
-							}}
+							onChange={handleChange}
 							{...input.props}
 						/>
 					</Input.Wrapper>
@@ -148,6 +144,7 @@ export type StyleInputType = {
 	key?: string;
 	input?: React.ForwardedRef<any>;
 	defaultValue?: number | string;
+	textField?: boolean;
 	children?: {
 		label: string;
 		key: string;
@@ -162,7 +159,7 @@ const inputs = [
 		label: "Background Color",
 		key: "backgroundColor",
 		input: ColorInput,
-		defaultValue: "#fff",
+		defaultValue: "Choose a color",
 		props: {
 			format: "rgba",
 		},
@@ -171,7 +168,7 @@ const inputs = [
 		label: "Text Color",
 		key: "color",
 		input: ColorInput,
-		defaultValue: "#000",
+		defaultValue: "Choose a color",
 		props: {
 			format: "rgba",
 		},
@@ -191,7 +188,6 @@ const inputs = [
 		label: "Padding",
 		key: "padding",
 		input: NumberInput,
-		defaultValue: "20",
 		children: [
 			{
 				label: "Top",
@@ -215,7 +211,6 @@ const inputs = [
 		label: "Margin",
 		key: "margin",
 		input: NumberInput,
-		defaultValue: "0",
 		children: [
 			{
 				label: "Top",

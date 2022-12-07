@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 import { useDrop } from "react-dnd";
-import { ElementsContext } from "../contexts/ElementsProvider";
 import { createStyles } from "@mantine/core";
 import { componentMap, ElementType } from "../types/elements";
+import { useElementsContext } from "../contexts/ElementsProvider";
 export const dropFunc = (
 	addElement,
 	position = "bottom" as "top" | "bottom"
@@ -44,7 +44,7 @@ export default function Playground() {
 		reset,
 		selectedElementHierarchy,
 		resetSelectedElement,
-	} = useContext(ElementsContext);
+	} = useElementsContext();
 
 	const [{ isOver, isOverCurrent }, drop] = useDrop(
 		dropFunc(addElement, "bottom")
@@ -95,8 +95,12 @@ export default function Playground() {
 		</div>
 	);
 }
-export type ElementComponentType = Omit<ElementType, "children"> & {
+export type ElementComponentType = Omit<
+	Omit<ElementType, "children">,
+	"Component"
+> & {
 	children?: React.ReactNode;
+	Component: React.FC<any>;
 };
 const Element = (elementProps: ElementComponentType) => {
 	const { Component, children } = elementProps;

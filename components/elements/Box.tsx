@@ -1,6 +1,6 @@
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useDrop } from "react-dnd";
-import { ElementsContext } from "../../contexts/ElementsProvider";
+import { useElementsContext } from "../../contexts/ElementsProvider";
 import { dropFunc, ElementComponentType } from "../Playground";
 import styles from "styles/elements/Box.module.scss";
 import { ElementType } from "../../types/elements";
@@ -11,7 +11,7 @@ export default function Box({
 	content,
 }: ElementComponentType) {
 	const { addElement, selectElement, selectedElementHierarchy } =
-		useContext(ElementsContext);
+		useElementsContext();
 	const [{ isOverCurrent }, drop] = useDrop(
 		dropFunc(({ item }: { item: ElementType }) =>
 			addElement({ item: item, hierarchy })

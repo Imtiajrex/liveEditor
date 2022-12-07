@@ -1,4 +1,4 @@
-import { ElementsContext } from "../../contexts/ElementsProvider";
+import { useElementsContext } from "../../contexts/ElementsProvider";
 import React, { useContext, useState } from "react";
 import { renderInputs, StyleInputType, useStyles } from "./StyleTab";
 import { SegmentedControl, Center, TextInput, Text } from "@mantine/core";
@@ -21,7 +21,7 @@ export default function StructureTab() {
 		getSelectedElement,
 		updateSelectedElement,
 		selectedElementHierarchy,
-	} = useContext(ElementsContext);
+	} = useElementsContext();
 	const [content, setContent] = useState({
 		content: "",
 	});
@@ -190,8 +190,8 @@ const inputs = [
 		label: "Height",
 		key: "height",
 		input: TextInput,
+		textField: true,
 		props: {
-			textField: true,
 			placeholder: "auto",
 		},
 	},

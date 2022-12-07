@@ -1,6 +1,6 @@
 import { createStyles, Text, UnstyledButton } from "@mantine/core";
 import { useDrag } from "react-dnd";
-import { ElementType } from "../../contexts/ElementsProvider";
+import { ElementType } from "../../types/elements";
 
 const useStyles = createStyles((theme) => ({
 	item: {

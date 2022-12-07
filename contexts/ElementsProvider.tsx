@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
 	AddElementArgs,
 	AddElementFunctionType,
@@ -16,7 +16,16 @@ type ElementsContextType = {
 	resetSelectedElement: () => void;
 };
 export const ElementsContext = createContext({} as ElementsContextType);
-
+export const useElementsContext = () => useContext(ElementsContext);
+const createComponentID = ({
+	key,
+	hierarchy = [],
+	length = 0,
+}: {
+	key: string;
+	hierarchy?: number[];
+	length?: number;
+}) => `${key}_${hierarchy.length > 0 ? hierarchy.join("_") : length}`;
 export default function ElementsProvider({
 	children,
 }: {
@@ -32,7 +41,16 @@ export default function ElementsProvider({
 		position = "bottom",
 	}: AddElementArgs) => {
 		setElements((prev) => {
-			const newElement = { ...item, id: Date.now().toString() } as ElementType;
+			const id = createComponentID({
+				key: item.componentKey,
+				hierarchy,
+				length: prev.length,
+			});
+			console.log(hierarchy, id);
+			const newElement = {
+				...item,
+				id,
+			} as ElementType;
 			const newElements = _.cloneDeep(prev) as ElementType[];
 			if (hierarchy !== undefined) {
 				traverse({
@@ -152,9 +170,14 @@ const traverse = ({
 					return;
 				}
 				const children = _.cloneDeep(element.children || []);
+				const newHierarchy = [children.length, ...element.hierarchy];
 				children.push({
 					...item,
-					hierarchy: [children.length, ...element.hierarchy],
+					hierarchy: newHierarchy,
+					id: createComponentID({
+						key: item.componentKey,
+						hierarchy: newHierarchy,
+					}),
 				});
 				element.children = children;
 			} else {

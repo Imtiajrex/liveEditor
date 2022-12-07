@@ -1,19 +1,19 @@
 import { createStyles } from "@mantine/core";
+import { useState } from "react";
 import CompileButton from "../compilers/CompileButton";
+import CompileSidebar from "../compilers/CompileSidebar";
 
-const useStyles = createStyles((theme) => ({
-	container: {
-		position: "fixed",
-		top: "30%",
-		right: 20,
-		zIndex: 999,
-	},
-}));
+const useStyles = createStyles((theme) => ({}));
 export default function Compile() {
 	const { classes } = useStyles();
+	const [isOpen, setOpen] = useState(false);
+	const toggle = () => {
+		setOpen(true);
+	};
 	return (
-		<div className={classes.container}>
-			<CompileButton />
+		<div>
+			<CompileButton onClick={toggle} />
+			<CompileSidebar isOpen={isOpen} setOpen={setOpen} />
 		</div>
 	);
 }

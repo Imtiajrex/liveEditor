@@ -5,12 +5,12 @@ import {
 	IconListDetails,
 } from "@tabler/icons";
 import React, { useContext } from "react";
-import { ElementsContext } from "../contexts/ElementsProvider";
 import { createStyles, Tabs } from "@mantine/core";
 import StructureTab from "./sidebar/StructureTab";
 import StyleTab from "./sidebar/StyleTab";
 import AdvancedTab from "./sidebar/AdvancedTab";
 import Elements from "./lib/Elements";
+import { useElementsContext } from "../contexts/ElementsProvider";
 
 const useStyles = createStyles((theme) => ({
 	sideBar: {
@@ -29,7 +29,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function Sidebar() {
-	const { selectedElementHierarchy } = useContext(ElementsContext);
+	const { selectedElementHierarchy } = useElementsContext();
 	const { classes } = useStyles();
 	return (
 		<div
@@ -42,7 +42,7 @@ export default function Sidebar() {
 	);
 }
 const ElementsTabs = () => {
-	const { selectedElementHierarchy } = useContext(ElementsContext);
+	const { selectedElementHierarchy } = useElementsContext();
 
 	const [activeTab, setActiveTab] = React.useState<string | null>("elements");
 	React.useEffect(() => {

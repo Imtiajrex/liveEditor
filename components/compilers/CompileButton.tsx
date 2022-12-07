@@ -1,22 +1,17 @@
 import { ActionIcon, createStyles, Text } from "@mantine/core";
 import { IconCloudComputing } from "@tabler/icons";
-import { useContext } from "react";
-import { ElementsContext } from "../../contexts/ElementsProvider";
-import { compile } from "../../lib/compile";
-import { elements } from "../../types/elements";
 
 const useStyles = createStyles((theme) => ({
 	container: {},
 	button: {
-		padding: `20px 10px`,
+		position: "fixed",
+		top: "30%",
+		right: 20,
+		zIndex: 999,
 	},
 }));
-export default function CompileButton() {
+export default function CompileButton({ onClick }: { onClick: () => void }) {
 	const { classes } = useStyles();
-	const { elements } = useContext(ElementsContext);
-	const handleClick = (e) => {
-		compile(elements);
-	};
 	return (
 		<div className={classes.container}>
 			<ActionIcon
@@ -25,7 +20,8 @@ export default function CompileButton() {
 				size="lg"
 				title="Compile"
 				aria-label="Compile"
-				onClick={handleClick}
+				onClick={onClick}
+				className={classes.button}
 			>
 				<IconCloudComputing size={23} />
 			</ActionIcon>

@@ -1,9 +1,7 @@
-import { ElementsContext } from "../../contexts/ElementsProvider";
-import { useContext } from "react";
+import { useElementsContext } from "../../contexts/ElementsProvider";
 
 export default function AdvancedTab() {
-	const { getSelectedElement, updateSelectedElement } =
-		useContext(ElementsContext);
+	const { getSelectedElement, updateSelectedElement } = useElementsContext();
 
 	return <div></div>;
 }
