@@ -60,10 +60,10 @@ export default function StyleTab() {
 			{renderInputs({
 				inputs,
 				setMultipleValueCollapse,
-				setStyleValue,
+				setValue: setStyleValue,
 				multipleValueCollapse,
 				classes,
-				style,
+				value: style,
 			})}
 		</div>
 	);
@@ -71,10 +71,10 @@ export default function StyleTab() {
 export const renderInputs = ({
 	inputs,
 	setMultipleValueCollapse,
-	setStyleValue,
+	setValue,
 	multipleValueCollapse,
 	classes,
-	style,
+	value,
 }) => {
 	return inputs.map((input) => {
 		return (
@@ -103,10 +103,8 @@ export const renderInputs = ({
 									<Input.Wrapper label={child.label} key={child.key}>
 										<input.input
 											placeholder={input.defaultValue}
-											value={style[child.key] ?? ""}
-											onChange={(value) =>
-												setStyleValue({ key: child.key, value })
-											}
+											value={value[child.key] ?? ""}
+											onChange={(value) => setValue({ key: child.key, value })}
 											{...input.props}
 										/>
 									</Input.Wrapper>
@@ -117,12 +115,12 @@ export const renderInputs = ({
 								placeholder={input.defaultValue}
 								onChange={(value) => {
 									if (input.props && input.props.onChange) {
-										input.props.onChange({ value, setValue: setStyleValue });
+										input.props.onChange({ value, setValue });
 									} else {
-										setStyleValue({ key: input.key, value });
+										setValue({ key: input.key, value });
 									}
 								}}
-								value={style[input.key] ?? ""}
+								value={value[input.key] ?? ""}
 								{...input.props}
 							/>
 						)}
@@ -131,18 +129,12 @@ export const renderInputs = ({
 				{!input.children && (
 					<Input.Wrapper label={input.label}>
 						<input.input
-							value={style[input.key] ?? ""}
-							{...(input.props && input.props.textField
-								? {
-										onChange: (e) => {
-											setStyleValue({ key: input.key, value: e.target.value });
-										},
-								  }
-								: {
-										onChange: (value) => {
-											setStyleValue({ key: input.key, value });
-										},
-								  })}
+							value={value[input.key] ?? ""}
+							onChange={(val) => {
+								const value =
+									input.props && input.props.textField ? val.target.value : val;
+								setValue({ key: input.key, value });
+							}}
 							{...input.props}
 						/>
 					</Input.Wrapper>

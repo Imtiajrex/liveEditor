@@ -22,6 +22,7 @@
 		"react-dnd": "^16.0.1",
 		"react-dnd-html5-backend": "^16.0.1",
 		"react-dom": "18.2.0",
+		"react-style-object-to-css": "^1.1.2",
 		"sass": "^1.56.1"
 	},
 	"devDependencies": {

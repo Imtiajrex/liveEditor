@@ -37,11 +37,13 @@ export default function StructureTab() {
 			const element = getSelectedElement();
 			if (element && element.style) setStyle(element.style);
 			setContent({ content: element?.content ?? "" });
+		} else {
+			cleanup();
 		}
 		return cleanup();
 	}, [selectedElementHierarchy]);
 	const cleanup = () => {
-		setStyle({});
+		setMultipleValueCollapse({});
 		setContent({
 			content: "",
 		});
@@ -71,10 +73,10 @@ export default function StructureTab() {
 			{renderInputs({
 				inputs,
 				setMultipleValueCollapse,
-				setStyleValue,
+				setValue: setStyleValue,
 				multipleValueCollapse,
 				classes,
-				style,
+				value: style,
 			})}
 			<Text weight={700} size="lg">
 				Contents

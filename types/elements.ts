@@ -11,7 +11,7 @@ export type AddElementFunctionType = (element: AddElementArgs) => void;
 export type ElementType = {
 	title: string;
 	Icon: TablerIcon;
-	Component: React.ElementType;
+	Component?: React.ElementType;
 	componentKey: string;
 	children?: ElementType[];
 	hierarchy: number[];

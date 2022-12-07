@@ -8,6 +8,7 @@ import styles from "../styles/Home.module.css";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import ElementsProvider from "../contexts/ElementsProvider";
+import Compile from "../components/lib/Compile";
 type PageContentType = {
 	title: string;
 	component: JSX.Element;
@@ -28,6 +29,7 @@ const Home: NextPage = () => {
 						<Sidebar />
 						<Playground />
 					</DndProvider>
+					<Compile />
 				</div>
 			</ElementsProvider>
 		</div>
