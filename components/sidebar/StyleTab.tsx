@@ -103,7 +103,7 @@ export const renderInputs = ({
 									<Input.Wrapper label={child.label} key={child.key}>
 										<input.input
 											placeholder={input.defaultValue}
-											value={style[child.key]}
+											value={style[child.key] ?? ""}
 											onChange={(value) =>
 												setStyleValue({ key: child.key, value })
 											}
@@ -122,6 +122,7 @@ export const renderInputs = ({
 										setStyleValue({ key: input.key, value });
 									}
 								}}
+								value={style[input.key] ?? ""}
 								{...input.props}
 							/>
 						)}
@@ -130,7 +131,7 @@ export const renderInputs = ({
 				{!input.children && (
 					<Input.Wrapper label={input.label}>
 						<input.input
-							value={style[input.key]}
+							value={style[input.key] ?? ""}
 							{...(input.props && input.props.textField
 								? {
 										onChange: (e) => {

@@ -36,8 +36,16 @@ export default function StructureTab() {
 		if (selectedElementHierarchy.length > 0) {
 			const element = getSelectedElement();
 			if (element && element.style) setStyle(element.style);
+			setContent({ content: element?.content ?? "" });
 		}
+		return cleanup();
 	}, [selectedElementHierarchy]);
+	const cleanup = () => {
+		setStyle({});
+		setContent({
+			content: "",
+		});
+	};
 	const setStyleValue = ({ key, value }) => {
 		const selectedElement = getSelectedElement();
 		if (selectedElement) {
@@ -74,7 +82,7 @@ export default function StructureTab() {
 			<TextInput
 				label="Content"
 				placeholder="Enter Content here"
-				value={content.content}
+				value={content.content ?? ""}
 				onChange={handleContent}
 			/>
 		</div>
