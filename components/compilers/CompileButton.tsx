@@ -7,7 +7,7 @@ const useStyles = createStyles((theme) => ({
 		position: "fixed",
 		top: "30%",
 		right: 20,
-		zIndex: 999,
+		zIndex: 950,
 	},
 }));
 export default function CompileButton({ onClick }: { onClick: () => void }) {

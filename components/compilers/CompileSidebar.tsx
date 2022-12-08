@@ -1,15 +1,12 @@
 import { createStyles } from "@mantine/core";
-import { Text, Button, TextInput } from "@mantine/core";
-import {
-	IconBrandHtml5,
-	IconBrandSvelte,
-	IconDownload,
-	IconJumpRope,
-} from "@tabler/icons";
+import { Text, Button, TextInput, ActionIcon } from "@mantine/core";
+import { IconBrandHtml5, IconBrandSvelte, IconX } from "@tabler/icons";
 import { useState } from "react";
 import { useElementsContext } from "../../contexts/ElementsProvider";
 import { compile } from "../../lib/compile";
 import { saveAs } from "file-saver";
+
+import { openContextModal } from "@mantine/modals";
 const useStyles = createStyles((theme) => ({
 	sideBar: {
 		maxWidth: 250,
@@ -17,7 +14,7 @@ const useStyles = createStyles((theme) => ({
 		backgroundColor: theme.colors.gray[0],
 		height: "100%",
 		position: "fixed",
-		zIndex: 999,
+		zIndex: 998,
 		top: 0,
 		right: 0,
 		borderLeft: `2px solid ${theme.colors.gray[2]}`,
@@ -31,6 +28,11 @@ const useStyles = createStyles((theme) => ({
 	compilers: {
 		marginTop: 40,
 	},
+	titleContainer: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
 }));
 export default function CompileSidebar({ isOpen, setOpen }) {
 	const { classes } = useStyles();
@@ -38,15 +40,39 @@ export default function CompileSidebar({ isOpen, setOpen }) {
 	const [fileName, setfileName] = useState("");
 
 	const compileAndDownload = (extension: "html" | "svelte") => {
-		const html = compile(elements);
-		const file = new Blob([html], { type: "text/plain" });
-		saveAs(file, `${fileName.length > 0 ? fileName : "index"}.${extension}`);
+		const content = compile(elements);
+		const file = new Blob([content], { type: "text/plain" });
+		openContextModal({
+			modal: "filecontent",
+			title: `${fileName.toUpperCase()} File Content`,
+			size: "lg",
+			zIndex: 999,
+			innerProps: {
+				modalBody: content,
+			},
+		});
+		// saveAs(file, `${fileName.length > 0 ? fileName : "index"}.${extension}`);
 	};
 	return (
 		<div className={`${classes.sideBar} ${!isOpen && classes.hidden}`}>
-			<Text size={"lg"} weight="bold">
-				Compile
-			</Text>
+			<div className={classes.titleContainer}>
+				<Text size={"lg"} weight="bold">
+					Compile
+				</Text>
+
+				<ActionIcon
+					variant="outline"
+					color={"red.8"}
+					size="sm"
+					title="Compile"
+					aria-label="Compile"
+					onClick={() => {
+						setOpen(false);
+					}}
+				>
+					<IconX size={15} />
+				</ActionIcon>
+			</div>
 			<div className={classes.compilers}>
 				<TextInput
 					label="File Name"

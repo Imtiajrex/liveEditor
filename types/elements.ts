@@ -19,12 +19,17 @@ export type ElementType = {
 	style?: React.CSSProperties;
 	content?: string;
 };
+
 export const elements = [
 	{
 		title: "Container",
 		Icon: IconBox,
 		componentKey: "container",
-		style: {},
+		style: {
+			padding: 20,
+			display: "flex",
+			width: "100%",
+		},
 	},
 ] as ElementType[];
 
