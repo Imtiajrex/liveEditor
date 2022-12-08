@@ -195,4 +195,13 @@ const inputs = [
 			placeholder: "auto",
 		},
 	},
+	{
+		label: "Width",
+		key: "width",
+		input: TextInput,
+		textField: true,
+		props: {
+			placeholder: "100%",
+		},
+	},
 ] as StyleInputType[];

@@ -9,6 +9,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import ElementsProvider from "../contexts/ElementsProvider";
 import Compile from "../components/lib/Compile";
+import Navigation from "../components/navigation/Navigation";
 type PageContentType = {
 	title: string;
 	component: JSX.Element;
@@ -30,6 +31,7 @@ const Home: NextPage = () => {
 						<Playground />
 					</DndProvider>
 					<Compile />
+					<Navigation />
 				</div>
 			</ElementsProvider>
 		</div>

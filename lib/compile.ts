@@ -2,7 +2,12 @@ import { ElementType } from "../types/elements";
 import reactToCSS from "react-style-object-to-css";
 export const compile = (elements: ElementType[]) => {
 	const html = createHTMLFromElements(elements);
-	const css = `\n<style>\n${createCSSFromElements(elements)}\n</style>`;
+	const css = `\n<style>\n
+	*{
+		box-sizing: border-box;
+	}
+	${createCSSFromElements(elements)}
+	\n</style>`;
 	console.log(html + css);
 	return html + css;
 };
@@ -10,11 +15,12 @@ export const compile = (elements: ElementType[]) => {
 const createCSSFromElements = (elements: ElementType[]) => {
 	let source = "";
 	elements.forEach((element) => {
-		const style = reactToCSS(element.style);
+		let style = reactToCSS(element.style);
 		if (style) {
-			source += `.${element.id} {\n`;
+			source += `.${element.id}{\n\t\t`;
+			style = style.replace(/;/g, ";\n\t\t");
 			source += style;
-			source += "}\n";
+			source += "\n\t}\n\t";
 		}
 		if (element.children && element.children.length > 0)
 			source += `${createCSSFromElements(element.children)}`;
