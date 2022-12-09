@@ -72,9 +72,9 @@ export default function StructureTab() {
 			</Text>
 			{renderInputs({
 				inputs,
-				setMultipleValueCollapse,
+				setMulti: setMultipleValueCollapse,
 				setValue: setStyleValue,
-				multipleValueCollapse,
+				multi: multipleValueCollapse,
 				classes,
 				value: style,
 			})}

@@ -27,8 +27,6 @@ export const elements = [
 		componentKey: "container",
 		style: {
 			padding: 20,
-			display: "flex",
-			width: "100%",
 		},
 	},
 ] as ElementType[];

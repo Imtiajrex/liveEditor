@@ -5,6 +5,8 @@ export const compile = (elements: ElementType[]) => {
 	const css = `\n<style>\n
 	*{
 		box-sizing: border-box;
+		display:flex;
+		width: 100%;
 	}
 	${createCSSFromElements(elements)}
 	\n</style>`;

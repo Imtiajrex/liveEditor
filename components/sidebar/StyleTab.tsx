@@ -50,6 +50,15 @@ export default function StyleTab() {
 	const setStyleValue = ({ key, value }) => {
 		const selectedElement = getSelectedElement();
 		if (selectedElement) {
+			if (value == undefined && selectedElement.style) {
+				delete selectedElement.style[key];
+				setStyle((prev) => {
+					delete prev[key];
+					return { ...prev };
+				});
+				updateSelectedElement(selectedElement);
+				return;
+			}
 			selectedElement.style = { ...selectedElement.style, [key]: value };
 			setStyle((prevStyle) => ({ ...prevStyle, [key]: value }));
 			updateSelectedElement(selectedElement);
@@ -61,9 +70,9 @@ export default function StyleTab() {
 		<div className={classes.container}>
 			{renderInputs({
 				inputs,
-				setMultipleValueCollapse,
+				setMulti: setMultipleValueCollapse,
 				setValue: setStyleValue,
-				multipleValueCollapse,
+				multi: multipleValueCollapse,
 				classes,
 				value: style,
 			})}
@@ -72,9 +81,9 @@ export default function StyleTab() {
 }
 export const renderInputs = ({
 	inputs,
-	setMultipleValueCollapse,
+	setMulti,
 	setValue,
-	multipleValueCollapse,
+	multi,
 	classes,
 	value,
 }) => {
@@ -93,9 +102,9 @@ export const renderInputs = ({
 							</Text>
 							<Switch
 								label="Multi Value"
-								checked={multipleValueCollapse[input.key]}
+								checked={multi[input.key]}
 								onChange={(event) => {
-									setMultipleValueCollapse((prev) => ({
+									setMulti((prev) => ({
 										...prev,
 										[input.key]: !prev[input.key],
 									}));
@@ -103,13 +112,13 @@ export const renderInputs = ({
 							/>
 						</div>
 
-						{multipleValueCollapse[input.key] ? (
+						{multi[input.key] ? (
 							<div className={classes.inputs}>
 								{input.children.map((child) => (
 									<Input.Wrapper label={child.label} key={child.key}>
 										<input.input
 											placeholder={input.defaultValue}
-											value={value[child.key] ?? ""}
+											value={value[child.key] ?? value[input.key] ?? ""}
 											onChange={(value) => setValue({ key: child.key, value })}
 											{...input.props}
 										/>
