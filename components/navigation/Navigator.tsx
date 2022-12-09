@@ -158,7 +158,6 @@ const NavigatorElement = ({
 	const { classes } = useStyles();
 	const { selectedElementHierarchy } = useElementsContext();
 	const selected = selectedElementHierarchy.join("") === hierarchy.join("");
-	console.log(selected, selectedElementHierarchy, hierarchy);
 	return (
 		<div
 			className={`${classes.element} ${

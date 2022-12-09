@@ -1,8 +1,9 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import { useDrop } from "react-dnd";
-import { createStyles } from "@mantine/core";
+import { createStyles, ActionIcon } from "@mantine/core";
 import { componentMap, ElementType } from "../types/elements";
 import { useElementsContext } from "../contexts/ElementsProvider";
+import { IconTrash } from "@tabler/icons";
 export const dropFunc = (
 	addElement,
 	position = "bottom" as "top" | "bottom"
@@ -35,6 +36,19 @@ const useStyles = createStyles((theme) => ({
 	over: {
 		border: `3px solid rgb(80, 202, 192) !important`,
 	},
+	elementContainer: {
+		position: "relative",
+	},
+	actions: {
+		display: "flex",
+		position: "fixed",
+		top: 20,
+		right: 20,
+		background: theme.colors.gray[3],
+		padding: `5px 10px`,
+		borderRadius: 8,
+		boxShadow: theme.shadows.sm,
+	},
 }));
 
 export default function Playground() {
@@ -53,18 +67,7 @@ export default function Playground() {
 	const [topOver, topDrop] = useDrop(dropFunc(addElement, "top"));
 
 	const { classes } = useStyles();
-	const renderElements = (elements: ElementType[]) =>
-		elements.map((element: ElementType, index) => (
-			<Element
-				{...element}
-				Component={componentMap[element.componentKey]}
-				key={index}
-			>
-				{element.children && renderElements(element.children)}
-			</Element>
-		));
-
-	const handleClick = () => {
+	const handleOutsideClick = () => {
 		resetSelectedElement();
 	};
 	const overClass = isOverCurrent && classes.over;
@@ -74,7 +77,6 @@ export default function Playground() {
 				selectedElementHierarchy.length == 0 && classes.collapsed
 			}`}
 			ref={drop}
-			onClick={handleClick}
 		>
 			{isOver && elements.length > 0 && (
 				<div
@@ -88,13 +90,27 @@ export default function Playground() {
 			>
 				Reset
 			</div>
-			{renderElements(elements)}
+			<Elements elements={elements} />
 			{isOver && elements.length > 0 && (
 				<div className={`${classes.bottom}  ${overClass}`} />
 			)}
 		</div>
 	);
 }
+const Elements = ({ elements }: { elements: ElementType[] }) => (
+	<>
+		{elements.map((element: ElementType, index) => (
+			<Element
+				{...element}
+				Component={componentMap[element.componentKey]}
+				key={index}
+			>
+				{element.children && <Elements elements={element.children} />}
+			</Element>
+		))}
+	</>
+);
+
 export type ElementComponentType = Omit<
 	Omit<ElementType, "children">,
 	"Component"
@@ -104,5 +120,31 @@ export type ElementComponentType = Omit<
 };
 const Element = (elementProps: ElementComponentType) => {
 	const { Component, children } = elementProps;
-	return <Component {...elementProps}>{children}</Component>;
+	const { classes } = useStyles();
+	const { selectedElementHierarchy, deleteElement } = useElementsContext();
+	const selected =
+		selectedElementHierarchy.join("") == elementProps.hierarchy.join("");
+
+	return (
+		<div>
+			<Component {...elementProps}>{children}</Component>
+			{selected && (
+				<div className={classes.actions}>
+					<ActionIcon
+						color={"red.8"}
+						bg="gray.1"
+						size={"sm"}
+						title="Delete"
+						onClick={(e) => {
+							e.stopPropagation();
+							console.log("delete");
+							deleteElement(elementProps.hierarchy);
+						}}
+					>
+						<IconTrash size={12} />
+					</ActionIcon>
+				</div>
+			)}
+		</div>
+	);
 };

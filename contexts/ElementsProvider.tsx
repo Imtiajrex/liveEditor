@@ -14,6 +14,7 @@ type ElementsContextType = {
 	getSelectedElement: () => ElementType | null;
 	updateSelectedElement: (item: ElementType) => void;
 	resetSelectedElement: () => void;
+	deleteElement: (hierarchy: number[]) => void;
 };
 export const ElementsContext = createContext({} as ElementsContextType);
 export const useElementsContext = () => useContext(ElementsContext);
@@ -93,7 +94,25 @@ export default function ElementsProvider({
 	useEffect(() => {
 		checkIfSelectedExists();
 	}, [elements]);
-
+	const deleteElement = (hierarchy: number[]) => {
+		console.log("delete element");
+		if (hierarchy.length > 0) {
+			// const newElements = _.cloneDeep(elements);
+			// traverse({
+			// 	elements: newElements,
+			// 	hierarchy,
+			// 	item: {} as ElementType,
+			// 	remove: true,
+			// });
+			// setElements(newElements);
+		} else {
+			setElements((prev) =>
+				prev.filter(
+					(item, index) => item.hierarchy.join("") != hierarchy.join("")
+				)
+			);
+		}
+	};
 	const getSelectedElement = () => {
 		if (selectedElementHierarchy.length == 0) return null;
 		let selected = { item: {} } as { item: ElementType };
@@ -135,6 +154,7 @@ export default function ElementsProvider({
 				getSelectedElement,
 				updateSelectedElement,
 				resetSelectedElement,
+				deleteElement,
 			}}
 		>
 			{children}
@@ -149,6 +169,7 @@ const traverse = ({
 	assign = false,
 	returnValue = false,
 	returnElement,
+	remove = false,
 }: {
 	elements: ElementType[];
 	hierarchy: number[];
@@ -156,6 +177,7 @@ const traverse = ({
 	assign?: boolean;
 	returnValue?: boolean;
 	returnElement?: { item: ElementType };
+	remove?: boolean;
 }) => {
 	const topParent = hierarchy.pop();
 	elements.forEach((element, index) => {
@@ -167,6 +189,20 @@ const traverse = ({
 				}
 				if (assign) {
 					elements[index] = item;
+					return;
+				}
+				if (remove) {
+					const updatedElement = elements.filter(
+						(item, elementIdx) => elementIdx != index
+					);
+					elements = updatedElement.map((item, index) => {
+						return {
+							...item,
+							hierarchy: item.hierarchy.map((item, idx) =>
+								idx == 0 ? index : item
+							),
+						};
+					});
 					return;
 				}
 				const children = _.cloneDeep(element.children || []);
