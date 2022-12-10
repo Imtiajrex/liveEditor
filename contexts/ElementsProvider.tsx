@@ -96,7 +96,7 @@ export default function ElementsProvider({
 	}, [elements]);
 	const deleteElement = (hierarchy: number[]) => {
 		console.log("delete element");
-		if (hierarchy.length > 0) {
+		if (hierarchy.length > 1) {
 			// const newElements = _.cloneDeep(elements);
 			// traverse({
 			// 	elements: newElements,
