@@ -6,7 +6,7 @@ import {
 } from "@tabler/icons";
 import { MouseEventHandler, useState } from "react";
 import { useElementsContext } from "../../contexts/ElementsProvider";
-import { ElementType } from "../../types/elements";
+import { ElementType, hierarchyType } from "../../types/elements";
 const useStyles = createStyles((theme) => ({
 	container: {
 		position: "fixed",
@@ -126,7 +126,7 @@ const Elements = ({ elements }: { elements: ElementType[] }) => {
 								hierarchy={element.hierarchy}
 								onClick={selectElement}
 							/>
-							{element.children && (
+							{element.children && element.children.length > 0 && (
 								<ActionIcon
 									className={classes.icon}
 									onClick={() => {
@@ -151,9 +151,9 @@ const NavigatorElement = ({
 	onClick,
 	hierarchy,
 }: {
-	hierarchy: number[];
+	hierarchy: hierarchyType;
 	title: string;
-	onClick: (hierarchy: number[]) => void;
+	onClick: (hierarchy: hierarchyType) => void;
 }) => {
 	const { classes } = useStyles();
 	const { selectedElementHierarchy } = useElementsContext();

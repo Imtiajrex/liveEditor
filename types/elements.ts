@@ -3,7 +3,7 @@ import Box from "../components/elements/Box";
 
 export type AddElementArgs = {
 	item: ElementType;
-	hierarchy?: number[];
+	hierarchy?: hierarchyType;
 	position?: "top" | "bottom";
 };
 export type AddElementFunctionType = (element: AddElementArgs) => void;
@@ -14,12 +14,13 @@ export type ElementType = {
 	Component?: React.ElementType;
 	componentKey: string;
 	children?: ElementType[];
-	hierarchy: number[];
+	hierarchy: hierarchyType;
 	id: string;
 	style?: React.CSSProperties;
 	content?: string;
 };
 
+export type hierarchyType = string[];
 export const elements = [
 	{
 		title: "Container",

@@ -3,51 +3,128 @@ import {
 	AddElementArgs,
 	AddElementFunctionType,
 	ElementType,
+	hierarchyType,
 } from "../types/elements";
 import _ from "lodash";
 type ElementsContextType = {
 	elements: ElementType[];
 	addElement: AddElementFunctionType;
 	reset: () => void;
-	selectElement: (hierarchy: number[]) => void;
-	selectedElementHierarchy: number[];
+	selectElement: (hierarchy: hierarchyType) => void;
+	selectedElementHierarchy: hierarchyType;
 	getSelectedElement: () => ElementType | null;
 	updateSelectedElement: (item: ElementType) => void;
 	resetSelectedElement: () => void;
-	deleteElement: (hierarchy: number[]) => void;
+	deleteElement: (hierarchy: hierarchyType) => void;
 };
 export const ElementsContext = createContext({} as ElementsContextType);
 export const useElementsContext = () => useContext(ElementsContext);
-const createComponentID = ({
-	key,
-	hierarchy = [],
-	length = 0,
-}: {
-	key: string;
-	hierarchy?: number[];
-	length?: number;
-}) => `${key}_${hierarchy.length > 0 ? hierarchy.join("_") : length}`;
 export default function ElementsProvider({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
 	const [elements, setElements] = useState<ElementType[]>([]);
-	const [selectedElementHierarchy, setSelectedElementHierarchy] = useState<
-		number[]
-	>([]);
+	const [ids, setIds] = useState([] as string[]);
+	const [selectedElementHierarchy, setSelectedElementHierarchy] =
+		useState<hierarchyType>([]);
+	const uuid = ({ key }: { key: string }) => {
+		const randomString = "xxxxxxxx".replace(/[xy]/g, function (c) {
+			var r = (Math.random() * 16) | 0,
+				v = c == "x" ? r : (r & 0x3) | 0x8;
+			return v.toString(16);
+		});
+		const id = `${key}_${randomString}`;
+		if (ids.includes(id)) {
+			return uuid({ key });
+		}
+		setIds((prev) => [...prev, id]);
+		return id;
+	};
+
+	const traverse = ({
+		elements,
+		hierarchy,
+		item,
+		assign = false,
+		returnValue = false,
+		returnElement,
+		remove = false,
+		insert = false,
+	}: {
+		elements: ElementType[];
+		hierarchy: hierarchyType;
+		item: ElementType;
+		assign?: boolean;
+		returnValue?: boolean;
+		returnElement?: { item: ElementType };
+		remove?: boolean;
+		insert?: boolean;
+	}) => {
+		if (remove && hierarchy.length == 2) {
+			console.log("remove", hierarchy[0]);
+			setIds((prev) => prev.filter((id) => id !== hierarchy[0]));
+			elements.forEach((element) => {
+				if (element.id == hierarchy[1]) {
+					element.children = element.children?.filter(
+						(child) => child.id !== hierarchy[0]
+					);
+				}
+			});
+			return;
+		}
+		const topParent = hierarchy.pop();
+
+		elements.forEach((element, index) => {
+			if (element.id == topParent) {
+				if (hierarchy.length == 0) {
+					if (returnValue && returnElement) {
+						returnElement.item = element;
+						return;
+					}
+					if (assign) {
+						elements[index] = item;
+						return;
+					}
+					if (insert) {
+						const children = _.cloneDeep(element.children || []);
+						const id = uuid({
+							key: item.componentKey,
+						});
+						const newHierarchy = [id, ...element.hierarchy];
+						children.push({
+							...item,
+							hierarchy: newHierarchy,
+							id,
+						});
+						element.children = children;
+					}
+				} else {
+					if (element.children != undefined)
+						traverse({
+							elements: element.children,
+							hierarchy,
+							item,
+							assign,
+							returnElement,
+							returnValue,
+							insert,
+							remove,
+						});
+				}
+			}
+		});
+	};
+
 	const addElement = ({
 		item,
 		hierarchy,
 		position = "bottom",
 	}: AddElementArgs) => {
 		setElements((prev) => {
-			const id = createComponentID({
+			const id = uuid({
 				key: item.componentKey,
-				hierarchy,
-				length: prev.length,
 			});
-			console.log(hierarchy, id);
 			const newElement = {
 				...item,
 				id,
@@ -58,19 +135,13 @@ export default function ElementsProvider({
 					elements: newElements,
 					hierarchy,
 					item: newElement,
+					insert: true,
 				});
 			} else {
-				if (position == "bottom")
-					newElements.push({ ...newElement, hierarchy: [prev.length] });
+				const element = { ...newElement, hierarchy: [id] };
+				if (position == "bottom") newElements.push(element);
 				else {
-					let updatedElements = [
-						{ ...newElement, hierarchy: [0] },
-						...newElements,
-					];
-					updatedElements = updatedElements.map((item, index) => ({
-						...item,
-						hierarchy: [index],
-					}));
+					let updatedElements = [element, ...newElements];
 					return updatedElements;
 				}
 			}
@@ -80,7 +151,7 @@ export default function ElementsProvider({
 	const reset = () => {
 		setElements([]);
 	};
-	const selectElement = (hierarchy: number[]) => {
+	const selectElement = (hierarchy: hierarchyType) => {
 		setSelectedElementHierarchy(hierarchy);
 	};
 	const checkIfSelectedExists = () => {
@@ -94,18 +165,19 @@ export default function ElementsProvider({
 	useEffect(() => {
 		checkIfSelectedExists();
 	}, [elements]);
-	const deleteElement = (hierarchy: number[]) => {
-		console.log("delete element");
+	const deleteElement = (hierarchy: hierarchyType) => {
 		if (hierarchy.length > 1) {
-			// const newElements = _.cloneDeep(elements);
-			// traverse({
-			// 	elements: newElements,
-			// 	hierarchy,
-			// 	item: {} as ElementType,
-			// 	remove: true,
-			// });
-			// setElements(newElements);
+			let newElements = _.cloneDeep(elements);
+			traverse({
+				elements: newElements,
+				hierarchy,
+				item: {} as ElementType,
+				remove: true,
+			});
+			console.log(newElements);
+			setElements(newElements);
 		} else {
+			setIds((prev) => prev.filter((id) => id !== hierarchy.join("")));
 			setElements((prev) =>
 				prev.filter(
 					(item, index) => item.hierarchy.join("") != hierarchy.join("")
@@ -161,72 +233,3 @@ export default function ElementsProvider({
 		</ElementsContext.Provider>
 	);
 }
-
-const traverse = ({
-	elements,
-	hierarchy,
-	item,
-	assign = false,
-	returnValue = false,
-	returnElement,
-	remove = false,
-}: {
-	elements: ElementType[];
-	hierarchy: number[];
-	item: ElementType;
-	assign?: boolean;
-	returnValue?: boolean;
-	returnElement?: { item: ElementType };
-	remove?: boolean;
-}) => {
-	const topParent = hierarchy.pop();
-	elements.forEach((element, index) => {
-		if (index == topParent) {
-			if (hierarchy.length == 0) {
-				if (returnValue && returnElement) {
-					returnElement.item = element;
-					return;
-				}
-				if (assign) {
-					elements[index] = item;
-					return;
-				}
-				if (remove) {
-					const updatedElement = elements.filter(
-						(item, elementIdx) => elementIdx != index
-					);
-					elements = updatedElement.map((item, index) => {
-						return {
-							...item,
-							hierarchy: item.hierarchy.map((item, idx) =>
-								idx == 0 ? index : item
-							),
-						};
-					});
-					return;
-				}
-				const children = _.cloneDeep(element.children || []);
-				const newHierarchy = [children.length, ...element.hierarchy];
-				children.push({
-					...item,
-					hierarchy: newHierarchy,
-					id: createComponentID({
-						key: item.componentKey,
-						hierarchy: newHierarchy,
-					}),
-				});
-				element.children = children;
-			} else {
-				if (element.children != undefined)
-					traverse({
-						elements: element.children,
-						hierarchy,
-						item,
-						assign,
-						returnElement,
-						returnValue,
-					});
-			}
-		}
-	});
-};

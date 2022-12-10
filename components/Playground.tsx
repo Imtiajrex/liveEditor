@@ -105,7 +105,9 @@ const Elements = ({ elements }: { elements: ElementType[] }) => (
 				Component={componentMap[element.componentKey]}
 				key={index}
 			>
-				{element.children && <Elements elements={element.children} />}
+				{element.children && element.children.length > 0 && (
+					<Elements elements={element.children} />
+				)}
 			</Element>
 		))}
 	</>
@@ -135,9 +137,11 @@ const Element = (elementProps: ElementComponentType) => {
 						bg="gray.1"
 						size={"sm"}
 						title="Delete"
+						onMouseOver={(e) => {
+							e.stopPropagation();
+						}}
 						onClick={(e) => {
 							e.stopPropagation();
-							console.log("delete");
 							deleteElement(elementProps.hierarchy);
 						}}
 					>

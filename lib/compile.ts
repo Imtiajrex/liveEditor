@@ -10,7 +10,6 @@ export const compile = (elements: ElementType[]) => {
 	}
 	${createCSSFromElements(elements)}
 	\n</style>`;
-	console.log(html + css);
 	return html + css;
 };
 
