@@ -128,7 +128,7 @@ const Element = (elementProps: ElementComponentType) => {
 		selectedElementHierarchy.join("") == elementProps.hierarchy.join("");
 
 	return (
-		<div>
+		<>
 			<Component {...elementProps}>{children}</Component>
 			{selected && (
 				<div className={classes.actions}>
@@ -149,6 +149,6 @@ const Element = (elementProps: ElementComponentType) => {
 					</ActionIcon>
 				</div>
 			)}
-		</div>
+		</>
 	);
 };

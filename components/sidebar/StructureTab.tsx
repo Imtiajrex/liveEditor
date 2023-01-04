@@ -1,6 +1,11 @@
 import { useElementsContext } from "../../contexts/ElementsProvider";
 import React, { useContext, useState } from "react";
-import { renderInputs, StyleInputType, useStyles } from "./StyleTab";
+import {
+	renderInputs,
+	setStyleValue,
+	StyleInputType,
+	useStyles,
+} from "./StyleTab";
 import { SegmentedControl, Center, TextInput, Text } from "@mantine/core";
 import {
 	IconDirectionHorizontal,
@@ -22,9 +27,7 @@ export default function StructureTab() {
 		updateSelectedElement,
 		selectedElementHierarchy,
 	} = useElementsContext();
-	const [content, setContent] = useState({
-		content: "",
-	});
+	const [content, setContent] = useState<string>("");
 	const [style, setStyle] = useState({} as React.CSSProperties);
 	const [multipleValueCollapse, setMultipleValueCollapse] = useState(
 		{} as {
@@ -36,32 +39,23 @@ export default function StructureTab() {
 		if (selectedElementHierarchy.length > 0) {
 			const element = getSelectedElement();
 			if (element && element.style) setStyle(element.style);
-			setContent({ content: element?.content ?? "" });
-		} else {
-			cleanup();
+			setContent(element?.content ?? "");
 		}
-		return cleanup();
 	}, [selectedElementHierarchy]);
-	const cleanup = () => {
-		setMultipleValueCollapse({});
-		setContent({
-			content: "",
+	const handleValueChange = ({ key, value }: { key: string; value: any }) =>
+		setStyleValue({
+			key,
+			value,
+			setValue: setStyle,
+			getSelectedElement,
+			updateSelectedElement,
 		});
-	};
-	const setStyleValue = ({ key, value }) => {
-		const selectedElement = getSelectedElement();
-		if (selectedElement) {
-			selectedElement.style = { ...selectedElement.style, [key]: value };
-			setStyle((prevStyle) => ({ ...prevStyle, [key]: value }));
-			updateSelectedElement(selectedElement);
-		}
-	};
 	const handleContent = (e) => {
 		const selectedElement = getSelectedElement();
 		if (selectedElement) {
 			const value = e.target.value;
 			selectedElement.content = value;
-			setContent((prev) => ({ ...prev, content: value }));
+			setContent(value);
 			updateSelectedElement(selectedElement);
 		}
 	};
@@ -73,7 +67,7 @@ export default function StructureTab() {
 			{renderInputs({
 				inputs,
 				setMulti: setMultipleValueCollapse,
-				setValue: setStyleValue,
+				setValue: handleValueChange,
 				multi: multipleValueCollapse,
 				classes,
 				value: style,
@@ -84,7 +78,7 @@ export default function StructureTab() {
 			<TextInput
 				label="Content"
 				placeholder="Enter Content here"
-				value={content.content ?? ""}
+				value={content ?? ""}
 				onChange={handleContent}
 			/>
 		</div>
