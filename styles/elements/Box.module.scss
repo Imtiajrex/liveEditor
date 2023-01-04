@@ -16,8 +16,15 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	font-size: 12px !important;
 	width: 100%;
 	height: 100%;
 	padding: 20px;
 	border: 1px dashed #505050;
+}
+.default {
+	box-sizing: border-box;
+	display: flex;
+	position: relative;
+	width: 100%;
 }

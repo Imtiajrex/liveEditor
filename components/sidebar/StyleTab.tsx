@@ -3,9 +3,9 @@ import React, { useContext, useState } from "react";
 import {
 	ColorInput,
 	createStyles,
-	NumberInput,
 	Switch,
 	Text,
+	TextInput,
 	Input,
 } from "@mantine/core";
 
@@ -26,6 +26,30 @@ export const useStyles = createStyles((theme) => ({
 		alignItems: "center",
 	},
 }));
+export const setStyleValue = ({
+	key,
+	value,
+	setValue,
+	getSelectedElement,
+	updateSelectedElement,
+}) => {
+	const selectedElement = getSelectedElement();
+	if (selectedElement) {
+		console.log(value);
+		if ((value == undefined || value == "") && selectedElement.style) {
+			delete selectedElement.style[key];
+			setValue((prev) => {
+				delete prev[key];
+				return { ...prev };
+			});
+			updateSelectedElement(selectedElement);
+			return;
+		}
+		selectedElement.style = { ...selectedElement.style, [key]: value };
+		setValue((prevStyle) => ({ ...prevStyle, [key]: value }));
+		updateSelectedElement(selectedElement);
+	}
+};
 export default function StyleTab() {
 	const {
 		getSelectedElement,
@@ -47,31 +71,21 @@ export default function StyleTab() {
 			}
 		}
 	}, [selectedElementHierarchy]);
-	const setStyleValue = ({ key, value }) => {
-		const selectedElement = getSelectedElement();
-		if (selectedElement) {
-			if (value == undefined && selectedElement.style) {
-				delete selectedElement.style[key];
-				setStyle((prev) => {
-					delete prev[key];
-					return { ...prev };
-				});
-				updateSelectedElement(selectedElement);
-				return;
-			}
-			selectedElement.style = { ...selectedElement.style, [key]: value };
-			setStyle((prevStyle) => ({ ...prevStyle, [key]: value }));
-			updateSelectedElement(selectedElement);
-		}
-	};
 	const { classes } = useStyles();
-
+	const handleValueChange = ({ key, value }: { key: string; value: any }) =>
+		setStyleValue({
+			key,
+			value,
+			setValue: setStyle,
+			getSelectedElement,
+			updateSelectedElement,
+		});
 	return (
 		<div className={classes.container}>
 			{renderInputs({
 				inputs,
 				setMulti: setMultipleValueCollapse,
-				setValue: setStyleValue,
+				setValue: handleValueChange,
 				multi: multipleValueCollapse,
 				classes,
 				value: style,
@@ -88,7 +102,7 @@ export const renderInputs = ({
 	value,
 }) => {
 	return inputs.map((input) => {
-		const handleChange = (val) => {
+		const handleChange = (val, key = input.key) => {
 			const value = input.textField ? val.target.value : val;
 			setValue({ key: input.key, value });
 		};
@@ -109,6 +123,7 @@ export const renderInputs = ({
 										[input.key]: !prev[input.key],
 									}));
 								}}
+								pb={10}
 							/>
 						</div>
 
@@ -119,7 +134,7 @@ export const renderInputs = ({
 										<input.input
 											placeholder={input.defaultValue}
 											value={value[child.key] ?? value[input.key] ?? ""}
-											onChange={(value) => setValue({ key: child.key, value })}
+											onChange={(value) => handleChange(value, child.key)}
 											{...input.props}
 										/>
 									</Input.Wrapper>
@@ -185,18 +200,21 @@ const inputs = [
 	{
 		label: "Font Size",
 		key: "fontSize",
-		input: NumberInput,
+		input: TextInput,
+		textField: true,
 	},
 	{
 		label: "Font weight",
 		key: "fontWeight",
-		input: NumberInput,
+		input: TextInput,
+		textField: true,
 	},
 
 	{
 		label: "Padding",
 		key: "padding",
-		input: NumberInput,
+		input: TextInput,
+		textField: true,
 		children: [
 			{
 				label: "Top",
@@ -219,7 +237,8 @@ const inputs = [
 	{
 		label: "Margin",
 		key: "margin",
-		input: NumberInput,
+		input: TextInput,
+		textField: true,
 		children: [
 			{
 				label: "Top",
